@@ -25,7 +25,7 @@ public class Board extends JPanel implements ActionListener {
 	public Lokum secondPressedLokum;
 	private int LokumWidth;
 	private int LokumHeight;
-	String combinationType;
+	public String combinationType;
 	public int combinationCode;
 	private State state;
 	private int goalScore;
@@ -33,7 +33,7 @@ public class Board extends JPanel implements ActionListener {
 	private int count = 0;
 	public Lokum[][] boardState;
 	public int remainingMoves;
-	public Lokum last = new Lokum();
+	public Lokum last ;
 	public boolean isSpecialSwap = false;
 	public int numOfSpecialSwaps;
 	public int level;
@@ -71,8 +71,20 @@ public class Board extends JPanel implements ActionListener {
 		super.paint(g);
 
 	}
-
-	protected void swap(Lokum lokum1, Lokum lokum2) {
+ 
+	/**
+	 * 
+	 * @param lokum1
+	 * @param lokum2
+	 * @requires two lokums that are not null, boardState array is generated.
+	 * @modifies boardState
+	 * @effects if specialswap is true, changes the locations and checks whether combination is generated. if so destroys the appropriate
+	 * lokums and decreases the number of special swaps by one, and finally sets the specialswap boolean to false. if no combination is generated
+	 * lokums are put back to their original positions. if special swap is false, it checks if the two lokum inputs are adjacent, if not, it does nothing,
+	 * if so, it checks if there is a combination generated and destroys the relevant lokums.
+	 */
+	
+	public void swap(Lokum lokum1, Lokum lokum2) {
 
 		if (isSpecialSwap == true) {
 			Lokum tempLokum;
@@ -111,7 +123,7 @@ public class Board extends JPanel implements ActionListener {
 			if (isCombinationGenerated()) {
 
 				numOfMoves++;
-				calc.calculateCombinationScore(combinationCode);
+			
 				if (combinationType == "horiz") {
 
 					destroyLokumsHoriz();
@@ -127,8 +139,15 @@ public class Board extends JPanel implements ActionListener {
 		}
 
 	}
+	/**
+	 * @requires boardState to be initialized
+	 * @modifies nothing
+	 * @effects checks if there are any null places in boardState, if there is it returns true, if not 
+	 * it returns false
+	 * @return
+	 */
 
-	protected boolean hasDownMoves() {
+	public boolean hasDownMoves() {
 
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
@@ -139,8 +158,14 @@ public class Board extends JPanel implements ActionListener {
 
 		return false;
 	}
+	/**
+	 * @requires boardState to be initialized
+	 * @modifies boardState and lokums
+	 * @effects while there are null places in boardState, moves the upper lokums down to the empty places
+	 * until there is no upper lokum, and then generates new random lokums at that position.
+	 */
 
-	protected void moveDown() {
+	 public void moveDown() {
 
 		while (hasDownMoves()) {
 			for (int i = 0; i < 9; i++) {
@@ -167,14 +192,7 @@ public class Board extends JPanel implements ActionListener {
 		Random rn = new Random();
 		id = rn.nextInt(4) + 0;
 		lok.setLokum(id, x, y);
-		JButton loki = new JButton();
-
-		loki.setBackground(Color.black);
-
-		loki.setBounds(100 + (x * 10), 100 + (y * 10), 10, 10);
-		loki.setVisible(true);
-
-		lok.setButton(loki);
+		
 
 		return lok;
 
@@ -184,7 +202,17 @@ public class Board extends JPanel implements ActionListener {
 
 	}
 
-	protected boolean isAdjacent(Lokum lok1, Lokum lok2) {
+	/**
+	 * 
+	 * @param lok1
+	 * @param lok2
+	 * @requires two lokums with initial coordinates
+	 * @modifies nothing
+	 * @effects checks if the lokums are adjacent, meaning that it checks if theyre next to each other horizontally,vertically or diagonally.
+	 * if they are, it returns true, if not it returns false
+	 * @return
+	 */
+	public boolean isAdjacent(Lokum lok1, Lokum lok2) {
 
 		int x1 = lok1.getCoordX();
 		int y1 = lok1.getCoordY();
@@ -208,8 +236,14 @@ public class Board extends JPanel implements ActionListener {
 		}
 
 	}
+	
+	/**
+	 * @effects checks first if there is a combination horizontally with loopforHoriz() method, if so returns true. if not checks
+	 * if there is a combination vertically, if so returns true and if not returns false.
+	 * @return
+	 */
 
-	boolean isCombinationGenerated() {
+	public boolean isCombinationGenerated() {
 
 		if (loopForHoriz() == true) {
 			return true;
@@ -221,8 +255,16 @@ public class Board extends JPanel implements ActionListener {
 		}
 		return false;
 	}
+	
+	/**
+	 * @requires boardState to be initialized properly
+	 * @modifies combinationCode, combinationType, last
+	 * @effects checks if there are three,four or five lokums of the same id, next to one another horizontally. if so returns true, changing the values of the 
+	 * necessary fields, if not returns false.
+	 * @return
+	 */
 
-	boolean loopForHoriz() {
+	public boolean loopForHoriz() {
 		int c = 0;
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
@@ -267,8 +309,16 @@ public class Board extends JPanel implements ActionListener {
 		combinationCode = 0;
 		return false;
 	}
+	
+	/**
+	 * @requires boardState to be initialized properly
+	 * @modifies combinationCode, combinationType, last
+	 * @effects checks whether there are three,four,five lokums with the same id next to each other vertically. If so returns true while
+	 * changing the necessary fields, if not returns false.
+	 * @return
+	 */
 
-	boolean loopForVert() {
+	public boolean loopForVert() {
 		int x = 0;
 
 		for (int i = 0; i < 9; i++) {
@@ -338,11 +388,19 @@ public class Board extends JPanel implements ActionListener {
 	//
 	//
 
-	void destroyLokumAt(Lokum[][] bs, int x, int y) {
+	
+	public void destroyLokumAt(Lokum[][] bs, int x, int y) {
 		bs[x][y] = null;
 	}
+	
+	/**
+	 * @requires combination to be generated, hence combinationType and combinationCode to be setted.
+	 * @modifies boardState, certain lokums
+	 * @effects checks the combinationType. if it is horiz, then gets the coordinates of the last lokum, and according
+	 * to the combinationCode, destroys the preceding lokums from the last lokum. 
+	 */
 
-	void destroyLokumsHoriz() {
+	public void destroyLokumsHoriz() {
 
 		if (combinationType.equals("horiz")) {
 			int x1 = last.getCoordX();
@@ -374,7 +432,7 @@ public class Board extends JPanel implements ActionListener {
 		}
 	}
 
-	void destroyLokumsVert() {
+	public void destroyLokumsVert() {
 		if (combinationType.equals("vertical")) {
 			int x1 = last.getCoordX();
 			int y1 = last.getCoordY();
